@@ -14,7 +14,7 @@ const passwordFormat = z
   .regex(/[0-9]/, { message: "Password must contain at least one number" })
 
 const phoneNoFormat = z.string().length(10)
-
+const UUIDFormat = z.string().uuid("Invalid UUID format")
 
 
 // ======= User auth schema ========
@@ -55,18 +55,21 @@ export const patientRegisterSchema = z.object({
 export const doctorRegisterSchema = z.object({
   name: nameFormat,
   email: emailFormat,
-  phoneNo:phoneNoFormat,
+  phoneNo: phoneNoFormat,
   specialization: z.array(z.string()).nonempty('Specialization must contain at least one item'),
 })
 
-
-const uuidSchema = z.object({
-  id: z.string().uuid("Invalid UUID format")
+export const patientToDoctorMapSchema = z.object({
+  patientId: UUIDFormat,
+  doctorId: UUIDFormat,
+  notes: z.string().min(2).max(300).optional()
 })
 
 
+
+
 export const validateUUIDParam = (req, res, next) => {
-  const validationResult = uuidSchema.safeParse(req.params);
+  const validationResult = z.object({ id: UUIDFormat }).safeParse(req.params);
 
   if (!validationResult.success) {
     return res.status(400).json({
@@ -119,3 +122,5 @@ export const validateUserLogin = validateSchema(userLoginSchema);
 export const validatePatientRegister = validateSchema(patientRegisterSchema)
 
 export const validateDoctorRegister = validateSchema(doctorRegisterSchema)
+
+export const validatePatientDoctorMap = validateSchema(patientToDoctorMapSchema)
