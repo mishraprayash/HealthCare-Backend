@@ -11,8 +11,22 @@ export const Doctor = sequelize.define('Doctors', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  specialization: DataTypes.STRING,
-  
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true
+    }
+  },
+  specialization: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: false,
+  },
+  phoneNo: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   userId: {
     type: DataTypes.UUID,
     allowNull: false,

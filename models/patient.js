@@ -23,7 +23,14 @@ export const Patient = sequelize.define('Patients', {
   },
   age: DataTypes.INTEGER,
   gender: DataTypes.STRING,
-  condition: DataTypes.STRING,
+  condition: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: false
+  },
+  phoneNo: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   userId: {
     type: DataTypes.UUID,
     allowNull: false,
