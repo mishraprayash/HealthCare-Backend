@@ -5,6 +5,7 @@ import errorHandler from "./middleware/errorHandler.js";
 
 import authRoute from "./routes/auth.route.js"
 import patientRoute from "./routes/patient.route.js"
+import doctorRoute from  "./routes/doctor.route.js"
 
 export function setupExpressApp() {
     const app = express();
@@ -19,6 +20,7 @@ export function setupExpressApp() {
 
     app.use('/api/auth',authRoute)
     app.use('/api/patients',patientRoute)
+    app.use('/api/doctors',doctorRoute)
 
 
     app.get('/', (req, res) => {
