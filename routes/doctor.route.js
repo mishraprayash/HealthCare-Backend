@@ -3,12 +3,13 @@ import { DoctorController } from "../controllers/doctor.controller.js";
 import { DoctorService } from "../services/doctor.service.js";
 import { validateDoctorRegister, validateUUIDParam } from "../middleware/validation.js";
 import { authMiddleware } from "../middleware/authMiddleware.js"
+import db from "../models/index.js";
 
 // Initialize router
 const router = Router();
 
 // Create service and controller instances
-const doctorService = new DoctorService();
+const doctorService = new DoctorService(db.Doctor);
 const doctorController = new DoctorController(doctorService);
 
 // Define routes with validation middleware and arrow functions to preserve 'this' context
