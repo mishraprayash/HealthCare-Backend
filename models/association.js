@@ -1,5 +1,6 @@
 
-export const applyAssociations = ({ User,Patient, Doctor, PatientDoctorMapping }) => {
+export const applyAssociations = ({ User, Patient, Doctor, PatientDoctorMapping }) => {
+
   Patient.belongsToMany(Doctor, {
     through: PatientDoctorMapping,
     foreignKey: 'patientId',
@@ -14,6 +15,16 @@ export const applyAssociations = ({ User,Patient, Doctor, PatientDoctorMapping }
     otherKey: 'patientId',
     as: 'patients',
     onDelete: 'CASCADE',
+  });
+
+  PatientDoctorMapping.belongsTo(Patient, {
+    foreignKey: 'patientId',
+    as: 'patient'
+  });
+
+  PatientDoctorMapping.belongsTo(Doctor, {
+    foreignKey: 'doctorId',
+    as: 'doctor'
   });
 
   // One-to-Many: User -> Patient
