@@ -39,7 +39,7 @@ export class PatientController {
         try {
             const { user } = req
             const patientId = req.params.id;
-            const patient = await this.patientService.findOne(patientId);
+            const patient = await this.patientService.findOne(user, patientId);
             return sendOKResponse(res, 200, "Patient Fetched Successfully", patient)
 
         } catch (error) {
@@ -53,9 +53,10 @@ export class PatientController {
 
     async updatePatient(req, res) {
         try {
+            const { user } = req;
             const patientId = req.params.id;
             const patientData = req.body;
-            const patient = await this.patientService.updateOne(patientData, patientId);
+            const patient = await this.patientService.updateOne(user, patientData, patientId);
             return sendOKResponse(res, 200, "Patient Updated Successfully", patient)
 
         } catch (error) {
@@ -67,8 +68,9 @@ export class PatientController {
     }
     async deletePatient(req, res) {
         try {
+            const {user} = req;
             const patientId = req.params.id;
-            await this.patientService.deleteOne(patientId);
+            await this.patientService.deleteOne(user,patientId);
             return sendOKResponse(res, 200, "Patient Deleted Successfully")
         } catch (error) {
             if (error.message === "Patient doesnot exist") {
