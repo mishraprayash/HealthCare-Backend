@@ -1,11 +1,13 @@
 
-import db from "../models/index.js";
-
 export class DoctorService {
+
+    constructor(doctorDBModel){
+        this.Doctor = doctorDBModel;
+    }
 
     async create(user, doctorData) {
         try {
-            const existingDoctor = await db.Doctor.findOne({
+            const existingDoctor = await this.Doctor.findOne({
                 where: {
                     email: doctorData.email,
                     userId: user.id
@@ -14,7 +16,7 @@ export class DoctorService {
             if (existingDoctor) {
                 throw new Error('Doctor already exists');
             }
-            const doctor = await db.Doctor.create(
+            const doctor = await this.Doctor.create(
                 { userId: user.id, ...doctorData }
             )
             return doctor;
@@ -26,7 +28,7 @@ export class DoctorService {
 
     async findAll(user) {
         try {
-            const doctors = await db.Doctor.findAll({
+            const doctors = await this.Doctor.findAll({
                 where: {
                     userId: user.id
                 }
@@ -40,7 +42,7 @@ export class DoctorService {
 
     async findOne(user, doctorId) {
         try {
-            const doctor = await db.Doctor.findOne({
+            const doctor = await this.Doctor.findOne({
                 where: {
                     id: doctorId,
                     userId: user.id
@@ -58,14 +60,14 @@ export class DoctorService {
 
     async updateOne(user, doctorData, doctorId) {
         try {
-            const doctor = await db.Doctor.findOne({
+            const doctor = await this.Doctor.findOne({
                 where: {
                     id: doctorId,
                     userId: user.id
                 }
             });
             if (!doctor) {
-                throw new Error('Doctor Doesnot exist');
+                throw new Error('Doctor doesnot exist');
             }
             doctor.set({
                 ...doctorData
@@ -83,7 +85,7 @@ export class DoctorService {
 
     async deleteOne(user, doctorId) {
         try {
-            const doctor = await db.Doctor.findOne({
+            const doctor = await this.Doctor.findOne({
                 where: {
                     id: doctorId,
                     userId: user.id
@@ -93,7 +95,6 @@ export class DoctorService {
                 throw new Error('Doctor Doesnot exist');
             }
             await doctor.destroy();
-            // return doctor;
         } catch (error) {
             console.log('Error while deleting a doctor', error.message);
             throw error;

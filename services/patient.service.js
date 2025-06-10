@@ -1,11 +1,12 @@
-
-import db from "../models/index.js";
-
 export class PatientService {
+
+    constructor(patientDBModel){
+        this.Patient = patientDBModel
+    }
 
     async create(user, patientData) {
         try {
-            const existingPatient = await db.Patient.findOne({
+            const existingPatient = await this.Patient.findOne({
                 where: {
                     email: patientData.email,
                     userId: user.id
@@ -14,7 +15,7 @@ export class PatientService {
             if (existingPatient) {
                 throw new Error('Patient already exists');
             }
-            const patient = await db.Patient.create(
+            const patient = await this.Patient.create(
                 { userId: user.id, ...patientData }
             )
             return patient;
@@ -26,7 +27,7 @@ export class PatientService {
 
     async findAll(user) {
         try {
-            const patients = await db.Patient.findAll({
+            const patients = await this.Patient.findAll({
                 where: {
                     userId: user.id
                 }
@@ -40,7 +41,7 @@ export class PatientService {
 
     async findOne(user, patientId) {
         try {
-            const patient = await db.Patient.findOne({
+            const patient = await this.Patient.findOne({
                 where: {
                     id: patientId,
                     userId: user.id
@@ -58,7 +59,7 @@ export class PatientService {
 
     async updateOne(user, patientData, patientId) {
         try {
-            const patient = await db.Patient.findOne({
+            const patient = await this.Patient.findOne({
                 where: {
                     id: patientId,
                     userId: user.id
@@ -83,7 +84,7 @@ export class PatientService {
 
     async deleteOne(user, patientId) {
         try {
-            const patient = await db.Patient.findOne({
+            const patient = await this.Patient.findOne({
                 where: {
                     id: patientId,
                     userId: user.id
