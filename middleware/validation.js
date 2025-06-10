@@ -1,47 +1,40 @@
 import { z } from 'zod';
 import { sendErrorResponse } from '../lib/responseHelper.js';
-import { email } from 'zod/v4';
+
+
+
+// commonly used fields 
+
+const nameFormat = z.string().min(2, { message: "Name must be at least 2 characters long" })
+const emailFormat = z.string().email({ message: "Invalid email format" })
+const passwordFormat = z
+  .string()
+  .min(6, { message: "Password must be at least 6 characters long" })
+  .regex(/[a-zA-Z]/, { message: "Password must contain at least one letter" })
+  .regex(/[0-9]/, { message: "Password must contain at least one number" })
+
+const phoneNoFormat = z.string().length(10)
 
 
 
 // ======= User auth schema ========
 export const userRegisterSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Name must be at least 2 characters long" }),
-  email: z
-    .string()
-    .email({ message: "Invalid email format" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long" })
-    .regex(/[a-zA-Z]/, { message: "Password must contain at least one letter" })
-    .regex(/[0-9]/, { message: "Password must contain at least one number" })
+  name: nameFormat,
+  email: emailFormat,
+  password: passwordFormat
 });
 
 export const userLoginSchema = z.object({
-  email: z
-    .string()
-    .email({ message: "Invalid email format" }),
-  password: z
-    .string()
-    .min(1, { message: "Password is required" })
+  email: emailFormat,
+  password: passwordFormat
 });
 
 // ======== Patient Schemas ==========
 
 export const patientRegisterSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Name must be at least 2 characters long" })
-    .max(100, { message: "Name must be at most 100 characters long" })
-    .regex(/^[a-zA-Z\s]+$/, { message: "Name can only contain letters and spaces" }),
-
-  email: z
-    .string()
-    .email({ message: "Invalid email format" })
-    .max(255, { message: "Email must be at most 255 characters long" }),
-
+  name: nameFormat,
+  email: emailFormat,
+  phoneNo: phoneNoFormat,
   age: z
     .number({
       required_error: "Age is required",
@@ -51,16 +44,20 @@ export const patientRegisterSchema = z.object({
     .min(1, { message: "Age must be at least 1" })
     .max(120, { message: "Age must be at most 120" }),
 
-  gender: z.enum(["Male", "Female", "Others"], {
+  gender: z.enum(["MALE", "FEMALE", "OTHERS", "male", "female", "Male", "Female", "others", "Others", "F", 'f', "M", "m", "O", 'o'], {
     required_error: "Gender is required",
-    invalid_type_error: "Gender must be either Male, Female, or Others",
+    invalid_type_error: "Gender must one of the followings: MALE, FEMALE, OTHERS, male, female, others, Male, Female, Others, F, f, M, m, O, o"
   }),
 
-  condition: z
-    .string()
-    .min(3, { message: "Condition description must be at least 3 characters long" })
-    .max(500, { message: "Condition description must be at most 500 characters long" }),
+  condition: z.array(z.string()).nonempty('Condition must contain at least one item'),
 });
+
+export const doctorRegisterSchema = z.object({
+  name: nameFormat,
+  email: emailFormat,
+  phoneNo:phoneNoFormat,
+  specialization: z.array(z.string()).nonempty('Specialization must contain at least one item'),
+})
 
 
 const uuidSchema = z.object({
@@ -68,7 +65,7 @@ const uuidSchema = z.object({
 })
 
 
-export const validateUUIDParam = (req,res,next) => {
+export const validateUUIDParam = (req, res, next) => {
   const validationResult = uuidSchema.safeParse(req.params);
 
   if (!validationResult.success) {
@@ -120,3 +117,5 @@ export const validateUserLogin = validateSchema(userLoginSchema);
 // patient validators
 
 export const validatePatientRegister = validateSchema(patientRegisterSchema)
+
+export const validateDoctorRegister = validateSchema(doctorRegisterSchema)
