@@ -38,9 +38,14 @@ export class PatientService {
         }
     }
 
-    async findOne(patientId) {
+    async findOne(user, patientId) {
         try {
-            const patient = await db.Patient.findByPk(patientId);
+            const patient = await db.Patient.findOne({
+                where: {
+                    id: patientId,
+                    userId: user.id
+                }
+            });
             if (!patient) {
                 throw new Error('Patient doesnot exist');
             }
@@ -51,9 +56,14 @@ export class PatientService {
         }
     }
 
-    async updateOne(patientData, patientId) {
+    async updateOne(user, patientData, patientId) {
         try {
-            const patient = await db.Patient.findByPk(patientId);
+            const patient = await db.Patient.findOne({
+                where: {
+                    id: patientId,
+                    userId: user.id
+                }
+            });
             if (!patient) {
                 throw new Error('Patient Doesnot exist');
             }
@@ -63,16 +73,24 @@ export class PatientService {
             await patient.save();
             return patient;
         } catch (error) {
-            console.log('Error while updating patient information', error.message)
+            console.log('Error while updating patient information', error)
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                throw new Error('Email already exists');
+            }
             throw error;
         }
     }
-    
-    async deleteOne(patientId) {
+
+    async deleteOne(user, patientId) {
         try {
-            const patient = await db.Patient.findByPk(patientId);
+            const patient = await db.Patient.findOne({
+                where: {
+                    id: patientId,
+                    userId: user.id
+                }
+            });
             if (!patient) {
-                throw new Error('Patient Doesnot exist');
+                throw new Error("Patient doesnot exist");
             }
             await patient.destroy();
             // return patient;
